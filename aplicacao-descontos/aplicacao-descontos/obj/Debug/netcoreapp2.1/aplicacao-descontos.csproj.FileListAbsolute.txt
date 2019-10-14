@@ -1,0 +1,14 @@
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\bin\Debug\netcoreapp2.1\aplicacao-descontos.deps.json
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\bin\Debug\netcoreapp2.1\aplicacao-descontos.runtimeconfig.json
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\bin\Debug\netcoreapp2.1\aplicacao-descontos.runtimeconfig.dev.json
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\bin\Debug\netcoreapp2.1\aplicacao-descontos.dll
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\bin\Debug\netcoreapp2.1\aplicacao-descontos.pdb
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\obj\Debug\netcoreapp2.1\aplicacao-descontos.csprojAssemblyReference.cache
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\obj\Debug\netcoreapp2.1\aplicacao-descontos.csproj.CoreCompileInputs.cache
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\obj\Debug\netcoreapp2.1\aplicacao-descontos.RazorAssemblyInfo.cache
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\obj\Debug\netcoreapp2.1\aplicacao-descontos.RazorAssemblyInfo.cs
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\obj\Debug\netcoreapp2.1\aplicacao-descontos.AssemblyInfoInputs.cache
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\obj\Debug\netcoreapp2.1\aplicacao-descontos.AssemblyInfo.cs
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\obj\Debug\netcoreapp2.1\aplicacao-descontos.RazorTargetAssemblyInfo.cache
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\obj\Debug\netcoreapp2.1\aplicacao-descontos.dll
+C:\Users\Lelê\Desktop\Ingresso-desenv\aplicacao-descontos\aplicacao-descontos\obj\Debug\netcoreapp2.1\aplicacao-descontos.pdb
