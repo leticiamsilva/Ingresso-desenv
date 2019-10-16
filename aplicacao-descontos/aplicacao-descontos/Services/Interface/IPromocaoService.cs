@@ -1,15 +1,17 @@
 ﻿using aplicacaodescontos.Domain;
-using System;
+using aplicacaodescontos.ViewModel;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace aplicacaodescontos.Services.Interface
 {
     public interface IPromocaoService
     {
-        Carrinho AtualizaCarrinhoComPromocao(Promocao promocao, Carrinho carrinho);
+        PromocaoViewModel GetPromocaoViewModelByPromocode(List<PromocaoViewModel> promocoes, string promocode);
 
-        Carrinho AtualizaCarrinhoComPromocaoMOCK(Promocao promocao, Carrinho carrinho);
+        PromocaoViewModel GetPromocaoViewModelByPromocodeMOCK();
+
+        Carrinho AtualizaCarrinhoComPromocao(PromocaoViewModel promocaoViewModel, Carrinho carrinho);
+
+        Carrinho AtualizaCarrinhoComPromocaoMOCK();
     }
 }

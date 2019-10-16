@@ -3,9 +3,12 @@ using aplicacaodescontos.Infrastructure.Context;
 using aplicacaodescontos.Infrastructure.Repository;
 using aplicacaodescontos.Services;
 using aplicacaodescontos.Services.Interface;
+using aplicacaodescontos.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace aplicacaodescontos.Application.Controllers
 {
@@ -18,20 +21,18 @@ namespace aplicacaodescontos.Application.Controllers
         private PromocaoContext _promocaoContext;
         private IPromocaoRepository _promocaoRepository;
         private IPromocaoService _promocaoService;
-
-        //public PromocaoController(IPromocaoRepository promocaoRepository, IPromocaoService promocaoService)
+        
         public PromocaoController(PromocaoContext promocaoContext)
         {
             _promocaoContext = promocaoContext;
+            _promocaoRepository = new PromocaoRepository(promocaoContext);
         }
-
 
 
         //api/promocao
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            _promocaoRepository = new PromocaoRepository();
             _promocaoService = new PromocaoService();
 
             var carrinho = new Carrinho
@@ -46,14 +47,48 @@ namespace aplicacaodescontos.Application.Controllers
                 }
             };
 
-            var promocao = _promocaoRepository.GetPromocaoByPromocodeMOCK(carrinho.Promocode);
+            var promocoesViewModel = ConverterMaisDeUmaPromocaoParaPromocaoViewModel(_promocaoContext.Promocao.ToList<Promocao>());
 
-            var carrinhoComDesconto = _promocaoService.AtualizaCarrinhoComPromocaoMOCK(promocao, carrinho);
+            var promocaoViewModel = _promocaoService.GetPromocaoViewModelByPromocode(promocoesViewModel, carrinho.Promocode);
+
+            var carrinhoComDesconto = _promocaoService.AtualizaCarrinhoComPromocao(promocaoViewModel, carrinho);
             var valorTotal = carrinhoComDesconto.TotalPrice;
-            return new string[] { promocao.DescricaoPromocao, valorTotal.ToString() };
-            //return carrinhoComDesconto
+
+            return new string[] { promocaoViewModel.DescricaoPromocao, valorTotal.ToString() };
+            //return carrinhoComDesconto.serializable()
         }
 
+        private List<PromocaoViewModel> ConverterMaisDeUmaPromocaoParaPromocaoViewModel(List<Promocao> promocoes)
+        {
+            var promocoesViewModel = new List<PromocaoViewModel>();
+            foreach(var promocao in promocoes)
+            {
+                promocoesViewModel.Add(ConverterPromocaoParaViewModel(promocao));
+            }
+
+            return promocoesViewModel;
+        }
+
+        private PromocaoViewModel ConverterPromocaoParaViewModel(Promocao promocao)
+        {
+            var promocaoViewModel = new PromocaoViewModel
+            {
+                Id = promocao.Id,
+                DescricaoPromocao = promocao.DescricaoPromocao,
+                Nome = promocao.Nome,
+                Promocodes = promocao.Promocodes.Split(',').Select(p => p.Trim()).ToList(),
+                Restricao = promocao.Restricao,
+                Sigla = promocao.Sigla,
+                ValorDesconto = promocao.ValorDesconto
+            };
+
+            return promocaoViewModel;
+        }
+
+        public IActionResult Index(int id)
+        {
+            return View();
+        }
         
 
         // api/promocao/5
@@ -61,6 +96,12 @@ namespace aplicacaodescontos.Application.Controllers
         public ActionResult<string> Get(int id)
         {
             return "value";
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _promocaoRepository.Dispose();
+            base.Dispose(disposing);
         }
 
     }

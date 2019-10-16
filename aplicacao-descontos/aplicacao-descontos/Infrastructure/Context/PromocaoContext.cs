@@ -9,12 +9,12 @@ namespace aplicacaodescontos.Infrastructure.Context
 {
     public class PromocaoContext : DbContext
     {
-        public DbSet<Promocao> Promocoes { get; set; }
+        public DbSet<Promocao> Promocao { get; set; }
 
         public PromocaoContext(DbContextOptions<PromocaoContext> options)
             : base(options)
         {
-        }
+        }   
 
     }
 }

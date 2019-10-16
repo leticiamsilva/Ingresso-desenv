@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
+using System.ComponentModel.DataAnnotations;
 
 namespace aplicacaodescontos.Domain
 {
     public class Promocao
     {
-        public int Id { get; set; }
-        public string DescricaoPromocao { get; set; }
+        [Key]
+        public int Id{ get; set; }
         public string Sigla { get; set; }
-        public double ValorDesconto { get; set; }
-        public bool Restricao { get { return !String.IsNullOrEmpty(Sigla); } }
+        public string DescricaoPromocao { get; set; }
+        public string Nome { get; set; }
+        public string Restricao { get; set; }        
+        public double ValorDesconto { get; set; }        
+        public string Promocodes { get; set; }
     }
 }

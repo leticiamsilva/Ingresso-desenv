@@ -1,15 +1,11 @@
 ﻿using aplicacaodescontos.Domain;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace aplicacaodescontos.Infrastructure.Repository
 {
-    public interface IPromocaoRepository
+    public interface IPromocaoRepository : IDisposable
     {
-        IEnumerable<Promocao> GetPromocoes();
-        Promocao GetPromocaoByPromocode(string promocode);
-        Promocao GetPromocaoByPromocodeMOCK(string promocode);
+        IEnumerable<Promocao> GetPromocoes();        
     }
 }
