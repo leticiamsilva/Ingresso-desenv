@@ -13,9 +13,8 @@ namespace aplicacaodescontos.ViewModel
         public string Promocode { get; set; }
         public Session Sessions { get; set; }
 
-        public double TotalPrice
-        {
-            get { return Sessions.Tickets.Sum(t => t.Price); }
+        public double TotalPrice { get; set; }
+            
         }
 
 
