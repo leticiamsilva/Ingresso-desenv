@@ -39,18 +39,18 @@ namespace aplicacaodescontos.Services
             return promocaoViewModel;
         }
 
-        public Carrinho AtualizaCarrinhoComPromocao(PromocaoViewModel promocaoViewModel, Carrinho carrinho)
+        public Carrinho AtualizarCarrinhoComPromocao(PromocaoViewModel promocaoViewModel, Carrinho carrinho)
         {
             switch(promocaoViewModel.Sigla)
             {
                 case "FDS":
-                    return AplicaPromocaoFDS(promocaoViewModel, carrinho);
+                    return AplicarPromocaoFDS(promocaoViewModel, carrinho);
 
                 case "COR":
-                    return AplicaPromocaoCOR();
+                    return AplicarPromocaoCOR();
 
                 case "ING9":
-                    return AplicaPromocaoING9();
+                    return AplicarPromocaoING9();
 
                 default:
                     return carrinho; 
@@ -58,24 +58,40 @@ namespace aplicacaodescontos.Services
             
         }
 
-        private Carrinho AplicaPromocaoING9()
-        {
-            throw new NotImplementedException();
-        }
-
-        private Carrinho AplicaPromocaoCOR()
-        {
-            throw new NotImplementedException();
-        }
-
-        private Carrinho AplicaPromocaoFDS(PromocaoViewModel promocaoViewModel, Carrinho carrinho)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Carrinho AtualizaCarrinhoComPromocaoMOCK()
+        public Carrinho AtualizarCarrinhoComPromocaoMOCK()
         {
             return new Carrinho();
+        }
+
+        private Carrinho AplicarPromocaoING9()
+        {
+            throw new NotImplementedException();
+        }
+
+        private Carrinho AplicarPromocaoCOR()
+        {
+            throw new NotImplementedException();
+        }
+
+        private Carrinho AplicarPromocaoFDS(PromocaoViewModel promocaoViewModel, Carrinho carrinho)
+        {
+            var diaDoFilme = carrinho.Sessions.DateSession.DayOfWeek;
+            if (!(diaDoFilme == DayOfWeek.Saturday || diaDoFilme == DayOfWeek.Sunday))
+                return carrinho;
+
+            var tickets = carrinho.Sessions.Tickets;
+            var valorMaiorIngresso = tickets.Max(p => p.Price);
+
+            var ticketMaior = tickets.Where(t => t.Price == valorMaiorIngresso).FirstOrDefault();
+
+            ticketMaior.Price = aplicarDescontoNoValor(ticketMaior.Price, promocaoViewModel.ValorDesconto);
+
+            return carrinho;
+        }
+
+        private double aplicarDescontoNoValor(double price, double valorDesconto)
+        {
+            return price > valorDesconto ? price - valorDesconto : 0;
         }
     }
 }

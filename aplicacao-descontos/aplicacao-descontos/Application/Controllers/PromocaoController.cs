@@ -5,7 +5,6 @@ using aplicacaodescontos.Services;
 using aplicacaodescontos.Services.Interface;
 using aplicacaodescontos.ViewModel;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,22 +39,50 @@ namespace aplicacaodescontos.Application.Controllers
                 Promocode = "MxNxhm3q",
                 Sessions = new Session
                 {
-                    DateSession = new DateTime(2019, 10, 29),
-                    Tickets = null,
-                    Event = null, 
-                    Theatre = null
+                    DateSession = new DateTime(2019, 10, 19),
+                    Tickets = new List<Ticket>(),
+                    Event = new Event(),
+                    Theatre = new Theatre(),
                 }
             };
 
+            var ta = new Ticket()
+            {
+                ID = 23,
+                Name = "Meia",
+                Price = 31
+            };
+            var tb = new Ticket()
+            {
+                ID = 45, 
+                Name = "Inteira",
+                Price = 62
+            };
+
+            carrinho.Sessions.Tickets.Add(ta);
+            carrinho.Sessions.Tickets.Add(tb);
+
+            //Os promocodes foram inseridos no banco em uma mesma célula.
             var promocoesViewModel = ConverterMaisDeUmaPromocaoParaPromocaoViewModel(_promocaoContext.Promocao.ToList<Promocao>());
 
             var promocaoViewModel = _promocaoService.GetPromocaoViewModelByPromocode(promocoesViewModel, carrinho.Promocode);
 
-            var carrinhoComDesconto = _promocaoService.AtualizaCarrinhoComPromocao(promocaoViewModel, carrinho);
-            var valorTotal = carrinhoComDesconto.TotalPrice;
+            var carrinhoComDesconto = _promocaoService.AtualizarCarrinhoComPromocao(promocaoViewModel, carrinho);
 
-            return new string[] { promocaoViewModel.DescricaoPromocao, valorTotal.ToString() };
-            //return carrinhoComDesconto.serializable()
+            var carrinhoViewModel = ConverterCarrinhoParaCarrinhoViewModel(carrinhoComDesconto);
+
+            return new string[] { promocaoViewModel.DescricaoPromocao, carrinhoViewModel.TotalPrice.ToString() };
+        }
+
+        private CarrinhoViewModel ConverterCarrinhoParaCarrinhoViewModel(Carrinho carrinho)
+        {
+            return new CarrinhoViewModel()
+            {
+                Id = carrinho.Id,
+                Date = carrinho.Date,
+                Promocode = carrinho.Promocode,
+                Sessions = carrinho.Sessions
+            };
         }
 
         private List<PromocaoViewModel> ConverterMaisDeUmaPromocaoParaPromocaoViewModel(List<Promocao> promocoes)
