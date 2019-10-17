@@ -6,12 +6,9 @@ namespace aplicacaodescontos.Domain
 {
     public class Session
     {
-      public DateTime DateSession { get; set; }
-
-      public  Event Event { get; set; }
-
+      public Event Event { get; set; }
+      public DateTime Date{ get; set; }
       public Theatre Theatre { get; set; }
-
       public IList<Ticket> Tickets { get; set; }
 
     }

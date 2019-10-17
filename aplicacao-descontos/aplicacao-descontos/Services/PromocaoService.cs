@@ -79,14 +79,14 @@ namespace aplicacaodescontos.Services
 
         private Carrinho AplicarPromocaoCOR(PromocaoViewModel promocaoViewModel, Carrinho carrinho)
         {
-            carrinho.TotalPrice = AplicarDescontoNoPreco(carrinho.TotalPrice, promocaoViewModel.ValorDesconto)
+            carrinho.TotalPrice = AplicarDescontoNoPreco(carrinho.TotalPrice, promocaoViewModel.ValorDesconto);
 
             return carrinho;
         }
 
         private Carrinho AplicarPromocaoFDS(PromocaoViewModel promocaoViewModel, Carrinho carrinho)
         {
-            var diaDoFilme = carrinho.Sessions.DateSession.DayOfWeek;
+            var diaDoFilme = carrinho.Sessions.Date.DayOfWeek;
 
             if (diaDoFilme == DayOfWeek.Saturday || diaDoFilme == DayOfWeek.Sunday)
             {

@@ -7,14 +7,14 @@ namespace aplicacaodescontos.Domain
     public class Carrinho
     {
         [DataMember]
-        public int Id { get; set; }
+        public string _Id { get; set; }
         [DataMember]
         public DateTime Date { get; set; }
         [DataMember]
-        public double TotalPrice { get; set; }
-        [DataMember]
-        public string Promocode { get; set; }
+        public double TotalPrice { get; set; } 
         [DataMember]
         public Session Sessions { get; set; }
+        [DataMember]
+        public string Promocode { get; set; }
     }
 }

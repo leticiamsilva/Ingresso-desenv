@@ -39,7 +39,7 @@ namespace aplicacaodescontos.Application.Controllers
                 Promocode = "VgfGVmZp",
                 Sessions = new Session
                 {
-                    DateSession = new DateTime(2019, 10, 16),
+                    Date= new DateTime(2019, 10, 16),
                     Tickets = new List<Ticket>(),
                     Event = new Event(),
                     Theatre = new Theatre(),
@@ -71,14 +71,17 @@ namespace aplicacaodescontos.Application.Controllers
 
             var carrinhoViewModel = ConverterCarrinhoParaCarrinhoViewModel(carrinhoComDesconto);
 
-            return new string[] { promocaoViewModel.DescricaoPromocao, "Valor total: " + carrinhoViewModel.TotalPrice.ToString() };
+            //return new string[] { promocaoViewModel.DescricaoPromocao, "Valor total: " + carrinhoViewModel.TotalPrice.ToString() };
+
+
+            return Json(carrinhoViewModel);
         }
 
         private CarrinhoViewModel ConverterCarrinhoParaCarrinhoViewModel(Carrinho carrinho)
         {
             return new CarrinhoViewModel()
             {
-                Id = carrinho.Id,
+                _Id = carrinho._Id,
                 Date = carrinho.Date,
                 Promocode = carrinho.Promocode,
                 Sessions = carrinho.Sessions, 
