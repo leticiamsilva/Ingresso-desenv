@@ -5,6 +5,7 @@ using aplicacaodescontos.Services;
 using aplicacaodescontos.Services.Interface;
 using aplicacaodescontos.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,68 +21,20 @@ namespace aplicacaodescontos.Application.Controllers
         private PromocaoContext _promocaoContext;
         private IPromocaoRepository _promocaoRepository;
         private IPromocaoService _promocaoService;
-        
+
         public PromocaoController(PromocaoContext promocaoContext)
         {
-            _promocaoContext = promocaoContext; 
+            _promocaoContext = promocaoContext;
             _promocaoRepository = new PromocaoRepository(promocaoContext);
         }
 
-
-        //api/promocao
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        [AcceptVerbs("GET")]
+        [Route("CarrinhoDesconto")]
+        public IEnumerable<string> CarrinhoDesconto (string carrinhoReq)
         {
+            Carrinho carrinho = JsonConvert.DeserializeObject<Carrinho>(carrinhoReq);
+
             _promocaoService = new PromocaoService();
-
-            var carrinho = new Carrinho
-            {
-                Promocode = "BCBmzwCX", //com teatro invalido, com os dois validos, com os 2 invalidos
-                Sessions = new Session
-                {
-                    Date= new DateTime(2019, 10, 19),
-                    Tickets = new List<Ticket>(),
-                    Event = new Event(),
-                    Theatre = new Theatre(),
-                }
-            };
-
-            var ta = new Ticket()
-            {
-                ID = 23,
-                Name = "Meia",
-                Price = 31
-            };
-            var tb = new Ticket()
-            {
-                ID = 45, 
-                Name = "Inteira",
-                Price = 62
-            };
-
-            var e = new Event()
-            {
-                Id = 22050,
-                Name = "Coringa"
-            };
-
-
-            var t = new Theatre()
-            {
-                Id = 7,
-                Name = "Roxy"
-            };
-
-            carrinho.Sessions.Event = e;
-            carrinho.Sessions.Theatre = t;
-            carrinho.Sessions.Tickets.Add(ta);
-            carrinho.Sessions.Tickets.Add(tb);
-
-           
-
-
-
-
 
             //Os promocodes foram inseridos no banco em uma mesma célula.
             var promocoesViewModel = ConverterMaisDeUmaPromocaoParaPromocaoViewModel(_promocaoContext.Promocao.ToList<Promocao>());
@@ -92,11 +45,16 @@ namespace aplicacaodescontos.Application.Controllers
 
             var carrinhoComDesconto = _promocaoService.AtualizarCarrinhoComPromocao(promocaoViewModel, carrinhoViewModel);
 
-            
-
             return new string[] { carrinhoComDesconto.TotalPrice.ToString(), promocaoViewModel.Nome };
 
             //return Json(carrinhoViewModel);
+        }
+
+        //api/promocao
+        [HttpGet]
+        public ActionResult<IEnumerable<string>> Get()
+        {
+            return new string[] { "Api Aplica Desconto" };
         }
 
         private CarrinhoViewModel ConverterCarrinhoParaCarrinhoViewModel(Carrinho carrinho)
