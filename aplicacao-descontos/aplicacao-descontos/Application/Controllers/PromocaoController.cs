@@ -23,7 +23,7 @@ namespace aplicacaodescontos.Application.Controllers
         
         public PromocaoController(PromocaoContext promocaoContext)
         {
-            _promocaoContext = promocaoContext;
+            _promocaoContext = promocaoContext; 
             _promocaoRepository = new PromocaoRepository(promocaoContext);
         }
 
@@ -36,10 +36,10 @@ namespace aplicacaodescontos.Application.Controllers
 
             var carrinho = new Carrinho
             {
-                Promocode = "VgfGVmZp",
+                Promocode = "BCBmzwCX", //com teatro invalido, com os dois validos, com os 2 invalidos
                 Sessions = new Session
                 {
-                    Date= new DateTime(2019, 10, 16),
+                    Date= new DateTime(2019, 10, 19),
                     Tickets = new List<Ticket>(),
                     Event = new Event(),
                     Theatre = new Theatre(),
@@ -59,22 +59,44 @@ namespace aplicacaodescontos.Application.Controllers
                 Price = 62
             };
 
+            var e = new Event()
+            {
+                Id = 22050,
+                Name = "Coringa"
+            };
+
+
+            var t = new Theatre()
+            {
+                Id = 7,
+                Name = "Roxy"
+            };
+
+            carrinho.Sessions.Event = e;
+            carrinho.Sessions.Theatre = t;
             carrinho.Sessions.Tickets.Add(ta);
             carrinho.Sessions.Tickets.Add(tb);
+
+           
+
+
+
+
 
             //Os promocodes foram inseridos no banco em uma mesma célula.
             var promocoesViewModel = ConverterMaisDeUmaPromocaoParaPromocaoViewModel(_promocaoContext.Promocao.ToList<Promocao>());
 
             var promocaoViewModel = _promocaoService.GetPromocaoViewModelByPromocode(promocoesViewModel, carrinho.Promocode);
 
-            var carrinhoComDesconto = _promocaoService.AtualizarCarrinhoComPromocao(promocaoViewModel, carrinho);
+            var carrinhoViewModel = ConverterCarrinhoParaCarrinhoViewModel(carrinho);
 
-            var carrinhoViewModel = ConverterCarrinhoParaCarrinhoViewModel(carrinhoComDesconto);
+            var carrinhoComDesconto = _promocaoService.AtualizarCarrinhoComPromocao(promocaoViewModel, carrinhoViewModel);
 
-            //return new string[] { promocaoViewModel.DescricaoPromocao, "Valor total: " + carrinhoViewModel.TotalPrice.ToString() };
+            
 
+            return new string[] { carrinhoComDesconto.TotalPrice.ToString(), promocaoViewModel.Nome };
 
-            return Json(carrinhoViewModel);
+            //return Json(carrinhoViewModel);
         }
 
         private CarrinhoViewModel ConverterCarrinhoParaCarrinhoViewModel(Carrinho carrinho)
@@ -84,7 +106,7 @@ namespace aplicacaodescontos.Application.Controllers
                 _Id = carrinho._Id,
                 Date = carrinho.Date,
                 Promocode = carrinho.Promocode,
-                Sessions = carrinho.Sessions, 
+                Sessions = carrinho.Sessions,
                 TotalPrice = carrinho.TotalPrice
             };
         }
@@ -105,15 +127,34 @@ namespace aplicacaodescontos.Application.Controllers
             var promocaoViewModel = new PromocaoViewModel
             {
                 Id = promocao.Id,
-                DescricaoPromocao = promocao.DescricaoPromocao,
+                DescricaoAplicarPromocao = promocao.DescricaoAplicarPromocao,
+                SiglaAplicarPromocao = promocao.SiglaAplicarPromocao,
                 Nome = promocao.Nome,
                 Promocodes = promocao.Promocodes.Split(',').Select(p => p.Trim()).ToList(),
-                Restricao = promocao.Restricao,
-                Sigla = promocao.Sigla,
+                Restricoes = RecuperaRestricoes(promocao.Restricoes),
                 ValorDesconto = promocao.ValorDesconto
             };
 
             return promocaoViewModel;
+        }
+
+        private List<Restricao> RecuperaRestricoes(string restricoes)
+        {
+
+          var listaRestricoes = new List<Restricao>();
+
+            if (!String.IsNullOrEmpty(restricoes))
+            {
+                var restricoesAAplicar = restricoes.Split(',').Select(r => r.Trim()).ToList();
+
+                foreach (string restricao in restricoesAAplicar)
+                {
+                    int idRestricao = int.Parse(restricao);
+                    listaRestricoes.Add(_promocaoContext.Restricao.Where(r => r.Id == idRestricao).FirstOrDefault());
+                }
+            }
+
+            return listaRestricoes;
         }
 
         public IActionResult Index(int id)

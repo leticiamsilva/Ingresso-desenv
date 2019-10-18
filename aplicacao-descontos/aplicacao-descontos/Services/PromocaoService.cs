@@ -25,87 +25,137 @@ namespace aplicacaodescontos.Services
         {
             var promocaoViewModel = new PromocaoViewModel
             {
-                DescricaoPromocao = "Desconto sobre maior ingresso",
+                Id = 1,
+                DescricaoAplicarPromocao = "Desconto sobre maior ingresso",
+                SiglaAplicarPromocao = "MAI",
                 Nome = "Final de semana é dia de cinema!",
                 Promocodes = new List<string>(),
-                Restricao = "Apenas para as sessões de sábado e domingo",
-                Sigla = "FDS", //COR- ING9
+                Restricoes = new List<Restricao>(),
                 ValorDesconto = 12.50
             };
             promocaoViewModel.Promocodes.Add("YsnPvmhm");
             promocaoViewModel.Promocodes.Add("AdPRtqzw");
             promocaoViewModel.Promocodes.Add("MxNxhm3q");
 
+            var restricao = new Restricao()
+            {
+                Id = 1,
+                Nome = "Apenas para as sessões de sábado e domingo",
+                Sigla = "FDS",
+            };
+
+            promocaoViewModel.Restricoes.Add(restricao);
+
             return promocaoViewModel;
         }
 
-        public Carrinho AtualizarCarrinhoComPromocao(PromocaoViewModel promocaoViewModel, Carrinho carrinho)
+        public CarrinhoViewModel AtualizarCarrinhoComPromocao(PromocaoViewModel promocaoViewModel, CarrinhoViewModel carrinho)
         {
-            switch(promocaoViewModel.Sigla)
+            carrinho.TotalPrice = carrinho.Sessions.Tickets.Sum(t => t.Price);
+
+            bool promocaoValida = AplicarRestricoesPromocao(carrinho, promocaoViewModel.Restricoes);
+
+            if(promocaoValida)
             {
-                case "FDS":
-                    return AplicarPromocaoFDS(promocaoViewModel, carrinho);
+                switch(promocaoViewModel.SiglaAplicarPromocao)
+                {
+                    case "MEN":
+                        return AplicarDescontoIngresso(promocaoViewModel, carrinho, promocaoViewModel.SiglaAplicarPromocao);
 
-                case "COR":
-                    return AplicarPromocaoCOR(promocaoViewModel, carrinho);
+                    case "MAI":
+                        return AplicarDescontoIngresso(promocaoViewModel, carrinho, promocaoViewModel.SiglaAplicarPromocao);
 
-                case "ING9":
-                    return AplicarPromocaoING9(promocaoViewModel, carrinho);
-
-                default:
-                    return carrinho; 
+                    case "TOT":
+                        carrinho.TotalPrice = AplicarDescontoNoPreco(carrinho.Sessions.Tickets.Sum(t=>t.Price), promocaoViewModel.ValorDesconto);
+                        break;
+                }
             }
             
+            return carrinho;
         }
 
-        public Carrinho AtualizarCarrinhoComPromocaoMOCK()
+        private bool AplicarRestricoesPromocao(CarrinhoViewModel carrinho, List<Restricao> restricoes)
         {
-            return new Carrinho();
+
+
+            if (restricoes == null || !restricoes.Any())
+                return true;
+
+            foreach (var r in restricoes)
+            {
+                   switch(r.Sigla)
+                   {
+
+                    case "FDS":
+                        if(!ValidarFDS(carrinho.Sessions.Date))
+                            return false;
+                        break;
+
+                    case "F": //Event
+                        if (!ValidarAssociado(carrinho.Sessions.Event.Id, r.AssociadoId))
+                            return false;
+                        break;
+
+                    case "C": //Theatre
+                        if  (!ValidarAssociado(carrinho.Sessions.Theatre.Id, r.AssociadoId))
+                            return false;
+                        break;
+
+                    default:
+                        break;
+                   }
+            }
+
+            return true;
         }
 
-        private Carrinho AplicarPromocaoING9(PromocaoViewModel promocaoViewModel, Carrinho carrinho)
+        private bool ValidarAssociado(int id, int associadoId)
+        {
+            return id == associadoId;
+        }
+
+        public bool ValidarFDS(DateTime data)
+        {
+            return data.DayOfWeek == DayOfWeek.Saturday || data.DayOfWeek == DayOfWeek.Sunday;
+        }
+
+
+        public CarrinhoViewModel AtualizarCarrinhoComPromocaoMOCK()
+        {
+            return new CarrinhoViewModel();
+        }
+
+        private CarrinhoViewModel AplicarDescontoIngresso (PromocaoViewModel promocaoViewModel, CarrinhoViewModel carrinho, String tipoIngresso)
         {
             var tickets = carrinho.Sessions.Tickets;
 
-            var valorMenorIngresso = tickets.Min(p => p.Price);
+            double valorIngresso = 0;
 
-            var ticketMenor = tickets.Where(t => t.Price == valorMenorIngresso).FirstOrDefault();
-            ticketMenor.Price = AplicarDescontoNoPreco(ticketMenor.Price, promocaoViewModel.ValorDesconto);
+            switch (tipoIngresso)
+            {
+                case "MEN":
+                    valorIngresso = tickets.Min(p => p.Price);
+                    break;
+                case "MAI":
+                    valorIngresso = tickets.Max(p => p.Price);
+                    break;
+            }
+
+            var ticketADescontar = tickets.Where(t => t.Price == valorIngresso).FirstOrDefault();
+
+            ticketADescontar.Price = AplicarDescontoNoPreco(ticketADescontar.Price, promocaoViewModel.ValorDesconto);
 
             carrinho.TotalPrice = carrinho.Sessions.Tickets.Sum(t => t.Price); 
 
             return carrinho;
         }
 
-        private Carrinho AplicarPromocaoCOR(PromocaoViewModel promocaoViewModel, Carrinho carrinho)
-        {
-            carrinho.TotalPrice = AplicarDescontoNoPreco(carrinho.TotalPrice, promocaoViewModel.ValorDesconto);
-
-            return carrinho;
-        }
-
-        private Carrinho AplicarPromocaoFDS(PromocaoViewModel promocaoViewModel, Carrinho carrinho)
-        {
-            var diaDoFilme = carrinho.Sessions.Date.DayOfWeek;
-
-            if (diaDoFilme == DayOfWeek.Saturday || diaDoFilme == DayOfWeek.Sunday)
-            {
-                var tickets = carrinho.Sessions.Tickets;
-
-                var valorMaiorIngresso = tickets.Max(p => p.Price);
-
-                var ticketMaior = tickets.Where(t => t.Price == valorMaiorIngresso).FirstOrDefault();
-                ticketMaior.Price = AplicarDescontoNoPreco(ticketMaior.Price, promocaoViewModel.ValorDesconto);
-
-                carrinho.TotalPrice = carrinho.Sessions.Tickets.Sum(t => t.Price);
-            }
-
-            return carrinho;
-        }
 
         private double AplicarDescontoNoPreco(double price, double valorDesconto)
         {
+            
             return price > valorDesconto ? price - valorDesconto : 0;
         }
+
     }
 }

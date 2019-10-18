@@ -10,8 +10,8 @@ namespace aplicacaodescontos.Services.Interface
 
         PromocaoViewModel GetPromocaoViewModelByPromocodeMOCK();
 
-        Carrinho AtualizarCarrinhoComPromocao(PromocaoViewModel promocaoViewModel, Carrinho carrinho);
+        CarrinhoViewModel AtualizarCarrinhoComPromocao(PromocaoViewModel promocaoViewModel, CarrinhoViewModel carrinho);
 
-        Carrinho AtualizarCarrinhoComPromocaoMOCK();
+        CarrinhoViewModel AtualizarCarrinhoComPromocaoMOCK();
     }
 }
